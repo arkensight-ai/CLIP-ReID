@@ -12,6 +12,7 @@ from .sampler_ddp import RandomIdentitySampler_DDP
 import torch.distributed as dist
 from .occ_duke import OCC_DukeMTMCreID
 from .vehicleid import VehicleID
+from .visdrone2019_mot import VisDrone2019MOT
 from .veri import VeRi
 
 __factory = {
@@ -20,7 +21,8 @@ __factory = {
     'msmt17': MSMT17,
     'occ_duke': OCC_DukeMTMCreID,
     'veri': VeRi,
-    'VehicleID': VehicleID
+    'VehicleID': VehicleID,
+    'visdrone2019_mot': VisDrone2019MOT
 }
 
 def train_collate_fn(batch):

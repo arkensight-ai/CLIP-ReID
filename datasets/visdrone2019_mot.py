@@ -1,44 +1,37 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+import os
 import random
 import os.path as osp
 from .bases import BaseImageDataset
 from collections import defaultdict
 import pickle
 
-class VehicleID(BaseImageDataset):
+class VisDrone2019MOT(BaseImageDataset):
     """
-    VehicleID
-    Reference:
-    Deep Relative Distance Learning: Tell the Difference Between Similar Vehicles
-    
-    Dataset statistics:
-    # train_list: 13164 vehicles for model training
-    # test_list_800: 800 vehicles for model testing(small test set in paper
-    # test_list_1600: 1600 vehicles for model testing(medium test set in paper
-    # test_list_2400: 2400 vehicles for model testing(large test set in paper
-    # test_list_3200: 3200 vehicles for model testing
-    # test_list_6000: 6000 vehicles for model testing
-    # test_list_13164: 13164 vehicles for model testing
-    """
-    dataset_dir = 'VehicleID_V1.0'
+    VisDrone2019MOT
 
+    Dataset statistics:
+    # train_list: 34172 images
+    """
+    dataset_dir = 'bounding_box_train'
     def __init__(self, root='', verbose=True, test_size=800, **kwargs):
-        super(VehicleID, self).__init__()
-        self.dataset_dir = osp.join(root, self.dataset_dir)
-        self.img_dir = osp.join(self.dataset_dir, 'image')
+        super(VisDrone2019MOT, self).__init__()
+        self.dataset_dir = root 
+        self.bbox_folder = osp.join(self.dataset_dir, 'bounding_box_train')
+        self.img_dir = self.bbox_folder
         self.split_dir = osp.join(self.dataset_dir, 'train_test_split')
         self.train_list = osp.join(self.split_dir, 'train_list.txt')
+        self.test_list = osp.join(self.split_dir, 'test_list.txt')
         self.test_size = test_size
-
-        if self.test_size == 800:
-            self.test_list = osp.join(self.split_dir, 'test_list_800.txt')
-        elif self.test_size == 1600:
-            self.test_list = osp.join(self.split_dir, 'test_list_1600.txt')
-        elif self.test_size == 2400:
-            self.test_list = osp.join(self.split_dir, 'test_list_2400.txt')
-
+        self.train_sequences = [
+            "uav0000073_04464_v", "uav0000120_04775_v",  "uav0000201_00000_v",  "uav0000249_02688_v",  
+            "uav0000297_02761_v", "uav0000370_00001_v", "uav0000119_02301_v"
+        ]
+        self.test_sequences = [
+            "uav0000188_00000_v",  "uav0000249_00001_v",  "uav0000297_00000_v",  "uav0000306_00230_v"
+        ]
         print(self.test_list)
 
         self.check_before_run()
@@ -49,7 +42,7 @@ class VehicleID(BaseImageDataset):
         self.gallery = gallery
 
         if verbose:
-            print('=> VehicleID loaded')
+            print('=> Visdrone2019MOT loaded')
             self.print_dataset_statistics(train, query, gallery)
 
         self.num_train_pids, self.num_train_imgs, self.num_train_cams, self.num_train_vids = self.get_imagedata_info(
@@ -67,7 +60,6 @@ class VehicleID(BaseImageDataset):
             raise RuntimeError('"{}" is not available'.format(self.split_dir))
         if not osp.exists(self.train_list):
             raise RuntimeError('"{}" is not available'.format(self.train_list))
-
         if not osp.exists(self.test_list):
             raise RuntimeError('"{}" is not available'.format(self.test_list))
 
@@ -78,63 +70,47 @@ class VehicleID(BaseImageDataset):
 
 
     def parse_img_pids(self, nl_pairs, pid2label=None, cam=0):
-        # il_pair is the pairs of img name and label
         output = []
         for info in nl_pairs:
             name = info[0]
             pid = info[1]
+            seq = info[2]
             if pid2label is not None:
                 pid = pid2label[pid]
-            camid = cam  # use 0 or 1
-            img_path = osp.join(self.img_dir, name+'.jpg')
+            camid = cam
+            img_path = osp.join(self.img_dir, seq, name)
             viewid = 1
             output.append((img_path, pid, camid, viewid))
         return output
+        
 
     def process_split(self, relabel=False):
-        # read train paths
         train_pid_dict = defaultdict(list)
-
-        # 'train_list.txt' format:
-        # the first number is the number of image
-        # the second number is the id of vehicle
         with open(self.train_list) as f_train:
             train_data = f_train.readlines()
             for data in train_data:
-                name, pid = data.strip().split(' ')
-
+                name, pid, seq = data.strip().split(' ')
                 pid = int(pid)
-                train_pid_dict[pid].append([name, pid])
+                train_pid_dict[pid].append([name, pid, seq])
         train_pids = list(train_pid_dict.keys())
-        num_train_pids = len(train_pids)
-        assert num_train_pids == 13164, 'There should be 13164 vehicles for training,' \
-                                        ' but but got {}, please check the data'\
-                                        .format(num_train_pids)
-        # print('num of train ids: {}'.format(num_train_pids))
+
         test_pid_dict = defaultdict(list)
         with open(self.test_list) as f_test:
             test_data = f_test.readlines()
             for data in test_data:
-                name, pid = data.split(' ')
+                name, pid, seq = data.strip().split(' ')
                 pid = int(pid)
-                test_pid_dict[pid].append([name, pid])
+                test_pid_dict[pid].append([name, pid, seq])
         test_pids = list(test_pid_dict.keys())
-        num_test_pids = len(test_pids)
-        assert num_test_pids == self.test_size, 'There should be {} vehicles for testing,' \
-                                                ' but but got {}, please check the data'\
-                                                .format(self.test_size, num_test_pids)
 
         train_data = []
         query_data = []
         gallery_data = []
         train_pids = sorted(train_pids)
-        # for train ids, all images are used in the train set.
         for pid in train_pids:
-            imginfo = train_pid_dict[pid]  # imginfo include image name and id
+            imginfo = train_pid_dict[pid]
             train_data.extend(imginfo)
 
-        # for each test id, random choose one image for gallery
-        # and the other ones for query.
         for pid in test_pids:
             imginfo = test_pid_dict[pid]
             sample = random.choice(imginfo)
@@ -150,6 +126,5 @@ class VehicleID(BaseImageDataset):
         train = self.parse_img_pids(train_data, train_pid2label)
         query = self.parse_img_pids(query_data, cam=0)
         gallery = self.parse_img_pids(gallery_data, cam=1)
-        # attach different camera to prevent eval fail
 
         return train, query, gallery
