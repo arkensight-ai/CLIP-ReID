@@ -1,11 +1,13 @@
 MODEL:
   PRETRAIN_CHOICE: 'imagenet'
   METRIC_LOSS_TYPE: 'triplet'
-  IF_LABELSMOOTH: 'off'
+  IF_LABELSMOOTH: 'on'
   IF_WITH_CENTER: 'no'
-  NAME: 'RN50'
-  ID_LOSS_WEIGHT : 1.0
+  NAME: 'ViT-B-16'
+  STRIDE_SIZE: [16, 16]
+  ID_LOSS_WEIGHT : 0.25
   TRIPLET_LOSS_WEIGHT : 1.0
+  I2T_LOSS_WEIGHT : 1.0
 
 INPUT:
   SIZE_TRAIN: [256, 256]
@@ -13,8 +15,8 @@ INPUT:
   PROB: 0.5 # random horizontal flip
   RE_PROB: 0.5 # random erasing
   PADDING: 10
-  PIXEL_MEAN: [0.485, 0.456, 0.406]
-  PIXEL_STD: [0.229, 0.224, 0.225]
+  PIXEL_MEAN: [0.5, 0.5, 0.5]
+  PIXEL_STD: [0.5, 0.5, 0.5]
 
 DATALOADER:
   SAMPLER: 'softmax_triplet'
@@ -35,34 +37,34 @@ SOLVER:
     CHECKPOINT_PERIOD: 60
     LOG_PERIOD: 50
     WARMUP_EPOCHS: 5
-
+    
   STAGE2:
     IMS_PER_BATCH: 64
     OPTIMIZER_NAME: "Adam"
-    BASE_LR: 0.00035
+    BASE_LR: 0.00005
     WARMUP_METHOD: 'linear'
     WARMUP_ITERS: 10
-    WARMUP_FACTOR: 0.01
-    WEIGHT_DECAY:  0.0005
-    WEIGHT_DECAY_BIAS: 0.0005
+    WARMUP_FACTOR: 0.1
+    WEIGHT_DECAY:  0.0001
+    WEIGHT_DECAY_BIAS: 0.0001
     LARGE_FC_LR: False
-    MAX_EPOCHS: 120
-    CHECKPOINT_PERIOD: 120
+    MAX_EPOCHS: 60
+    CHECKPOINT_PERIOD: 60
     LOG_PERIOD: 50
-    EVAL_PERIOD: 120
+    EVAL_PERIOD: 60
     BIAS_LR_FACTOR: 2
     
-    STEPS: [40, 70]
+    STEPS: [30, 50]
     GAMMA: 0.1
   
 TEST:
   EVAL: True
   IMS_PER_BATCH: 64
-  RE_RANKING: True
+  RE_RANKING: False
   WEIGHT: ''
   NECK_FEAT: 'before'
   FEAT_NORM: 'yes'
-  DISTANCE_METRIC: 'cosine'
+  DISTANCE_METRIC: 'euclidian'
 
 RE_RANKING:
   K1 : 20
@@ -72,6 +74,6 @@ RE_RANKING:
 DATASETS:
   NAMES: ('visdrone2019_mot')
   ROOT_DIR: ('/home/markoharalovic/CLIP-ReID/data/VisDrone2019-MOT-test-dev')
-OUTPUT_DIR: 'outputs/visdrone2019_mot/cnn_clipreid'
+OUTPUT_DIR: 'outputs/visdrone2019_mot/vit_clipreid'
 
 # CUDA_VISIBLE_DEVICES=0 python test_clipreid.py  --config_file configs/visdrone2019_mot/cnn_clipreid.yml TEST.WEIGHT checkpoints/VehicleID_clipreid_RN50_120.pth 

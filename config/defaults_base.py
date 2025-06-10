@@ -181,6 +181,17 @@ _C.TEST.FEAT_NORM = 'yes'
 _C.TEST.DIST_MAT = "dist_mat.npy"
 # Whether calculate the eval score option: 'True', 'False'
 _C.TEST.EVAL = False
+
+_C.TEST.DISTANCE_METRIC = 'cosine'  # 'euclidean' or 'cosine'
+
+# ---------------------------------------------------------------------------- #
+# RE-RANKING
+# ---------------------------------------------------------------------------- #
+_C.RE_RANKING = CN()
+_C.RE_RANKING.K1 = 20
+_C.RE_RANKING.K2 = 6
+_C.RE_RANKING.LAMBDA_VALUE = 0.3
+
 # ---------------------------------------------------------------------------- #
 # Misc options
 # ---------------------------------------------------------------------------- #
