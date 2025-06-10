@@ -9,6 +9,7 @@ from torch.cuda import amp
 import torch.distributed as dist
 from torch.nn import functional as F
 from loss.supcontrast import SupConLoss
+from tqdm import tqdm
 
 def do_train_stage2(cfg,
              model,
@@ -70,7 +71,7 @@ def do_train_stage2(cfg,
             text_features.append(text_feature.cpu())
         text_features = torch.cat(text_features, 0).cuda()
 
-    for epoch in range(1, epochs + 1):
+    for epoch in tqdm(range(1, epochs + 1), desc="Epochs"):
         start_time = time.time()
         loss_meter.reset()
         acc_meter.reset()
@@ -79,7 +80,7 @@ def do_train_stage2(cfg,
         scheduler.step()
 
         model.train()
-        for n_iter, (img, vid, target_cam, target_view) in enumerate(train_loader_stage2):
+        for n_iter, (img, vid, target_cam, target_view) in enumerate(tqdm(train_loader_stage2)):
             optimizer.zero_grad()
             optimizer_center.zero_grad()
             img = img.to(device)
@@ -140,7 +141,7 @@ def do_train_stage2(cfg,
             if cfg.MODEL.DIST_TRAIN:
                 if dist.get_rank() == 0:
                     model.eval()
-                    for n_iter, (img, vid, camid, camids, target_view, _) in enumerate(val_loader):
+                    for n_iter, (img, vid, camid, camids, target_view, _) in enumerate(tqdm(val_loader, desc="Validation")):
                         with torch.no_grad():
                             img = img.to(device)
                             if cfg.MODEL.SIE_CAMERA:
@@ -161,7 +162,7 @@ def do_train_stage2(cfg,
                     torch.cuda.empty_cache()
             else:
                 model.eval()
-                for n_iter, (img, vid, camid, camids, target_view, _) in enumerate(val_loader):
+                for n_iter, (img, vid, camid, camids, target_view, _) in enumerate(tqdm(val_loader, desc="Validation")):
                     with torch.no_grad():
                         img = img.to(device)
                         if cfg.MODEL.SIE_CAMERA:
@@ -194,7 +195,8 @@ def do_inference(cfg,
     logger = logging.getLogger("transreid.test")
     logger.info("Enter inferencing")
 
-    evaluator = R1_mAP_eval(num_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM)
+    evaluator = R1_mAP_eval(num_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=cfg.TEST.RE_RANKING,
+                            k1 = cfg.RE_RANKING.K1, k2 = cfg.RE_RANKING.K2, lambda_value = cfg.RE_RANKING.LAMBDA_VALUE)
 
     evaluator.reset()
 
@@ -207,7 +209,7 @@ def do_inference(cfg,
     model.eval()
     img_path_list = []
 
-    for n_iter, (img, pid, camid, camids, target_view, imgpath) in enumerate(val_loader):
+    for n_iter, (img, pid, camid, camids, target_view, imgpath) in enumerate(tqdm(val_loader, desc="Inference")):
         with torch.no_grad():
             img = img.to(device)
             if cfg.MODEL.SIE_CAMERA:
