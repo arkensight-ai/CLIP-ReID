@@ -9,3 +9,5 @@
 /model/clip/__pycache__
 /data 
 /checkpoints
+/outputs
+/vis

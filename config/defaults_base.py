@@ -184,6 +184,8 @@ _C.TEST.EVAL = False
 
 _C.TEST.DISTANCE_METRIC = 'cosine'  # 'euclidean' or 'cosine'
 
+_C.TEST.PRETRAINED_CHECKPOINT_IDS = None
+
 # ---------------------------------------------------------------------------- #
 # RE-RANKING
 # ---------------------------------------------------------------------------- #

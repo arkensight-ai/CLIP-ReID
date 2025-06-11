@@ -10,8 +10,8 @@ MODEL:
   I2T_LOSS_WEIGHT : 1.0
 
 INPUT:
-  SIZE_TRAIN: [256, 256]
-  SIZE_TEST: [256, 256]
+  SIZE_TRAIN: [256, 128]
+  SIZE_TEST: [256, 128]
   PROB: 0.5 # random horizontal flip
   RE_PROB: 0.5 # random erasing
   PADDING: 10
@@ -59,23 +59,20 @@ SOLVER:
   
 TEST:
   EVAL: True
-  IMS_PER_BATCH: 128
+  IMS_PER_BATCH: 64
   RE_RANKING: False
   WEIGHT: ''
   NECK_FEAT: 'before'
   FEAT_NORM: 'yes'
   DISTANCE_METRIC: 'euclidian'
-  PRETRAINED_CHECKPOINT_IDS: 13164
-
+  PRETRAINED_CHECKPOINT_IDS: 1041
+  
 RE_RANKING:
   K1 : 20
   K2 : 6
   LAMBDA_VALUE : 0.3
 
 DATASETS:
-  NAMES: ('visdrone2019_mot')
-  ROOT_DIR: ('/home/markoharalovic/CLIP-ReID/data/VisDrone2019-MOT-test-dev')
-  
-OUTPUT_DIR: 'outputs/visdrone2019_mot/vit_clipreid/visdrone2019_mot_w_vehicleID_pth'
-
-# CUDA_VISIBLE_DEVICES=0 python test_clipreid.py  --config_file configs/visdrone2019_mot/vit_clipreid.yml TEST.WEIGHT checkpoints/VehicleID_clipreid_ViT-B-16_60.pth  OUTPUT_DIR 'outputs/visdrone2019_mot/vit_clipreid/visdrone2019_mot_w_vehicleID_pth' 
+  NAMES: ('seadronesee_mot')
+  ROOT_DIR: ('/home/markoharalovic/CLIP-ReID/data/SeaDronesSee_MOT')
+OUTPUT_DIR: 'outputs/seadronesee_mot/vit_clipreid'

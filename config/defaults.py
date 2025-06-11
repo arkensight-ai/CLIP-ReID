@@ -231,6 +231,7 @@ _C.TEST.DIST_MAT = "dist_mat.npy"
 # Whether calculate the eval score option: 'True', 'False'
 _C.TEST.EVAL = False
 _C.TEST.DISTANCE_METRIC = 'cosine'  # 'euclidean' or 'cosine'
+_C.TEST.PRETRAINED_CHECKPOINT_IDS = None
 
 # ---------------------------------------------------------------------------- #
 # RE-RANKING
