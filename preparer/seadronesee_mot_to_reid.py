@@ -10,7 +10,7 @@ OUTPUT_DIR_TRAIN = '/home/markoharalovic/CLIP-ReID/data/SeaDronesSee_MOT/boundin
 OUTPUT_DIR_ANN_TRAIN = '/home/markoharalovic/CLIP-ReID/data/SeaDronesSee_MOT/train_test_split'
 
 PADDING_PERCENTAGE = 0.30
-PROCESS_IMAGES = True
+PROCESS_IMAGES = False
 debug = False
 
 SPLITS = {
