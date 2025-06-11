@@ -8,6 +8,7 @@ import torch.distributed as dist
 import collections
 from torch.nn import functional as F
 from loss.supcontrast import SupConLoss
+from tqdm import tqdm
 
 def do_train_stage1(cfg,
              model,
@@ -41,7 +42,7 @@ def do_train_stage1(cfg,
     image_features = []
     labels = []
     with torch.no_grad():
-        for n_iter, (img, vid, target_cam, target_view) in enumerate(train_loader_stage1):
+        for n_iter, (img, vid, target_cam, target_view) in enumerate(tqdm(train_loader_stage1, desc = "Stage1, features proessing")):
             img = img.to(device)
             target = vid.to(device)
             with amp.autocast(enabled=True):
@@ -58,12 +59,13 @@ def do_train_stage1(cfg,
     del labels, image_features
 
     for epoch in range(1, epochs + 1):
+        print(f"Training epoch stage 1 : {epoch}")
         loss_meter.reset()
         scheduler.step(epoch)
         model.train()
 
         iter_list = torch.randperm(num_image).to(device)
-        for i in range(i_ter+1):
+        for i in tqdm(range(i_ter+1), desc = f"Processing epoch : {epoch}"):
             optimizer.zero_grad()
             if i != i_ter:
                 b_list = iter_list[i*batch:(i+1)* batch]

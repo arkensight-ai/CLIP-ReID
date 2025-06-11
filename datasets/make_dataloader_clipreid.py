@@ -14,6 +14,8 @@ from .occ_duke import OCC_DukeMTMCreID
 from .vehicleid import VehicleID
 from .visdrone2019_mot import VisDrone2019MOT
 from .veri import VeRi
+from .seadronesee_mot import SeaDroneSee2019MOT
+from .uav_mot import UAV_MOT
 
 __factory = {
     'market1501': Market1501,
@@ -22,7 +24,9 @@ __factory = {
     'occ_duke': OCC_DukeMTMCreID,
     'veri': VeRi,
     'VehicleID': VehicleID,
-    'visdrone2019_mot': VisDrone2019MOT
+    'visdrone2019_mot': VisDrone2019MOT,
+    'seadronesee_mot' : SeaDroneSee2019MOT,
+    'uav_mot': UAV_MOT,
 }
 
 def train_collate_fn(batch):

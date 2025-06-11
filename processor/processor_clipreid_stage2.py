@@ -61,7 +61,7 @@ def do_train_stage2(cfg,
         i_ter = i_ter+1
     text_features = []
     with torch.no_grad():
-        for i in range(i_ter):
+        for i in tqdm(range(i_ter), desc="Text feature batches"):
             if i+1 != i_ter:
                 l_list = torch.arange(i*batch, (i+1)* batch)
             else:
