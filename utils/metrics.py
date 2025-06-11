@@ -50,7 +50,10 @@ def eval_func(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50):
 
         # remove gallery samples that have the same pid and camid with query
         order = indices[q_idx]  # select one row
-        remove = (g_pids[order] == q_pid) & (g_camids[order] == q_camid)
+        if len(g_camids) > 1:
+            remove = (g_pids[order] == q_pid) & (g_camids[order] == q_camid)
+        else: 
+            keep = np.zeros_like(g_pids[order], dtype=bool)    
         keep = np.invert(remove)
 
         # compute cmc curve

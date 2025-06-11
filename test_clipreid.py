@@ -40,7 +40,8 @@ if __name__ == "__main__":
 
     train_loader, train_loader_normal, val_loader, num_query, num_classes, camera_num, view_num = make_dataloader(cfg)
 
-    num_classes = 13164
+    if cfg.TEST.PRETRAINED_CHECKPOINT_IDS is not None:
+        num_classes = cfg.TEST.PRETRAINED_CHECKPOINT_IDS 
 
     model = make_model(cfg, num_class=num_classes, camera_num=camera_num, view_num = view_num)
     model.load_param(cfg.TEST.WEIGHT)
