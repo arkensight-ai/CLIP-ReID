@@ -78,3 +78,4 @@ DATASETS:
 OUTPUT_DIR: 'outputs/uav_mot/vit_clipreid/uav_mot_ft_from_scratch_20_30_epochs'
 
 # CUDA_VISIBLE_DEVICES=0 python test_clipreid.py  --config_file configs/uav_mot/vit_clipreid.yml  TEST.WEIGHT checkpoints/VehicleID_clipreid_ViT-B-16_60.pth
+# CUDA_VISIBLE_DEVICES=0 python train_clipreid.py --config_file configs/uav_mot/vit_clipreid.yml

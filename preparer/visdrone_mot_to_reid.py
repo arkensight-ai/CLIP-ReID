@@ -15,19 +15,19 @@ SPLITS = {
     "val": {
         "base_dir": "../VisDrone2019-MOT-val/sequences",
         "ann_dir": "../VisDrone2019-MOT-val/annotations",
-        "output_dir": "./data/visdrone_mot_reid/bounding_boxes_val",
+        "output_dir": "./data/visdrone_mot_reid/bounding_boxes_train",
         "list_file": "test_list.txt"
     },
     "test": {
         "base_dir": "../VisDrone2019-MOT-test-dev/sequences",
         "ann_dir": "../VisDrone2019-MOT-test-dev/annotations",
-        "output_dir": "./data/visdrone_mot_reid/bounding_boxes_test",
+        "output_dir": "./data/visdrone_mot_reid/bounding_boxes_train",
         "list_file": "test_list.txt"
     }
 }
 
 OUTPUT_DIR_ANN = "./data/visdrone_mot_reid/train_val_test"
-OUTPUT_DIR = "../data/visdrone_mot_reid/bounding_boxes"
+OUTPUT_DIR = "../data/visdrone_mot_reid"
 
 PADDING_PERCENTAGE = 0.30
 PROCESS_IMAGES = True
